@@ -1,0 +1,23 @@
+CACHE = __pycache__ .mypy_cache mapgen/__pycache__
+
+run:
+	uv run python -m src --functions_definition data/input/functions_definition.json
+
+install:
+	pip install -r requirements.txt
+
+debug:
+	python3 -m pdb $(NAME) $(FILE)
+
+clean:
+	rm -rf $(CACHE)
+
+lint:
+	flake8
+	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+
+lint-strict:
+	flake8
+	mypy . --strict
+
+.PHONY: run install debug clean lint lint-strict
