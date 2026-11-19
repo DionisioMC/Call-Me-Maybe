@@ -1,0 +1,36 @@
+[project]
+name = "call-me-maybe"
+version = "0.1.0"
+description = "Function calling implementation using constrained decoding"
+requires-python = ">=3.10"
+readme = "README.md"
+authors = [
+    { name = "dcoelho" }
+]
+dependencies = [
+    "numpy>=2.2.6",
+    "pydantic>=2.14.4",
+    "llm_sdk",
+]
+
+[dependency-groups]
+dev = ["flake8", "mypy"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+llm-sdk = { path = "./llm_sdk", editable = true }
+
+[tool.mypy]
+exclude = [
+    '(^|/)llm_sdk(/|$)',
+    '(^|/)\.venv/',
+    '(^|/)\.cache/'
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "llm_sdk",
+    "llm_sdk.*"
+]
