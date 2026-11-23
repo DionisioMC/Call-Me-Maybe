@@ -1,6 +1,6 @@
 import json
 from typing import TypeVar
-from .models import FunctionDef, Prompt
+from .models import FunctionDef, PromptInput
 from pydantic import BaseModel, ValidationError
 
 
@@ -33,11 +33,16 @@ def load_json(file_path: str, model_class: type[TV]) -> list[TV]:
     return list_model_class
 
 
-def parse(argv: list[str]) -> tuple[list[FunctionDef], list[Prompt], str]:
+def parse(argv: list[str]) -> tuple[list[FunctionDef], list[PromptInput], str]:
+    if len(argv) != 1 and len(argv) != 7:
+        raise Exception("Usage: v run python -m src "
+                        "[--functions_definition <function_definition_file>] "
+                        "[--input <input_file>] [--output <output_file>] "
+                        "arguments in square brackets are optional")
     if (len(argv) == 7 and (argv[1] != "--functions_definition" or
                             argv[3] != "--input" or
                             argv[5] != "--output")):
-        raise Exception("Usage: uv run python -m src "
+        raise Exception("Usage: v run python -m src "
                         "[--functions_definition <function_definition_file>] "
                         "[--input <input_file>] [--output <output_file>] "
                         "arguments in square brackets are optional")
@@ -46,31 +51,10 @@ def parse(argv: list[str]) -> tuple[list[FunctionDef], list[Prompt], str]:
         input_path = "data/input/function_calling_tests.json"
         output_path = "data/output/function_calls.json"
     else:
-        if argv[1] == "--functions_definition":
-            functions_definition_path = argv[2]
-        elif argv[3] == "--functions_definition":
-            functions_definition_path = argv[4]
-        elif argv[5] == "--functions_definition":
-            functions_definition_path = argv[6]
-        else:
-            functions_definition_path = "data/input/functions_definition.json"
-        if argv[1] == "--input":
-            input_path = argv[2]
-        elif argv[3] == "--input":
-            input_path = argv[4]
-        elif argv[5] == "--input":
-            input_path = argv[6]
-        else:
-            input_path = "data/input/function_calling_tests.json"
-        if argv[1] == "--output":
-            output_path = argv[2]
-        elif argv[3] == "--output":
-            output_path = argv[4]
-        elif argv[5] == "--output":
-            output_path = argv[6]
-        else:
-            output_path = "data/output/function_calls.json"
-    functions_json_data: list[FunctionDef] = load_json(
+        functions_definition_path = argv[2]
+        input_path = argv[4]
+        output_path = argv[6]
+    functions_json_data = load_json(
         functions_definition_path, FunctionDef)
-    tests_json_data: list[Prompt] = load_json(input_path, Prompt)
+    tests_json_data = load_json(input_path, PromptInput)
     return (functions_json_data, tests_json_data, output_path)
