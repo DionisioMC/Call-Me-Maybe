@@ -56,5 +56,5 @@ def parse(argv: list[str]) -> tuple[list[FunctionDef], list[PromptInput], str]:
         output_path = argv[6]
     functions_json_data = load_json(
         functions_definition_path, FunctionDef)
-    tests_json_data = load_json(input_path, PromptInput)
-    return (functions_json_data, tests_json_data, output_path)
+    prompts_json_data = load_json(input_path, PromptInput)
+    return (functions_json_data, prompts_json_data, output_path)

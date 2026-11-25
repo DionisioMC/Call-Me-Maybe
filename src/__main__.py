@@ -1,23 +1,23 @@
-from .parser import parse
-from .prompt_generator import gen_prompt
-from .vocab import load_vocab
-from .llm_handler import load_model, encode_prompt, get_logits
 from sys import argv
-from .llm_handler import Small_LLM_Model
+from .parsing import parse
+from .constrained_decoder import ConstrainedDecoder
+from time import time
 
 
 def main() -> None:
     try:
-        functions, prompts, output_file = parse(argv)
-        model: Small_LLM_Model = load_model()
-        vocabulary = load_vocab(model)
-        print(f"Vocabulary size: {len(vocabulary)}")
-        for token_id, token in list(vocabulary.items())[:20]:
-            print(token_id, repr(token))
-    except ValueError as e:
-        print(e)
+        initial_time = time()
+        functions_json_data, tests_json_data, output_path = parse(argv)
+        constrained_decoder = ConstrainedDecoder(
+            functions_json_data=functions_json_data,
+            tests_json_data=tests_json_data,
+            output_path=output_path)
+        constrained_decoder.decode()
+        final_time = time()
+        print(ConstrainedDecoder.print_time(
+            initial_time, final_time, "\n\nFinal execution time"))
     except Exception as e:
-        print(e)
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":
