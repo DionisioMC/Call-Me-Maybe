@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from typing import Any
 
 
 class PromptInput(BaseModel):
@@ -17,3 +18,10 @@ class FunctionDef(BaseModel):
     description: str
     parameters: dict[str, ParameterDef]
     returns: ParameterDef
+
+
+class FunctionCallOutput(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid")
+    prompt: str
+    name: str
+    parameters: dict[str, Any]
