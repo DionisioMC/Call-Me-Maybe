@@ -13,7 +13,7 @@ class TokenManager(BaseModel):
         list[int],
         list[int]]
     valid_tokens_bool: tuple[list[int], list[int]]
-    valid_tokens_str: tuple[list[int], list[int]]
+    valid_tokens_str: list[int]
     _id_content_vocab: dict[int, str] = PrivateAttr()
 
     @classmethod
@@ -128,20 +128,11 @@ class TokenManager(BaseModel):
         return true_tokens, false_tokens
 
     @staticmethod
-    def get_valid_tokens_str(
-        vocabulary: dict[int, str]
-    ) -> tuple[list[int], list[int]]:
+    def get_valid_tokens_str(vocabulary: dict[int, str]) -> list[int]:
         valid_tokens = []
-        valid_tokens_last = []
-        for id, token in vocabulary.items():
-            if (token.count('"') == 1 and
-                (token[-1] == '"' or
-                    (token[-2] == '"' and token[-1] == ","))):
-                valid_tokens.append(id)
-            elif (token.count('"') == 1 and
-                    token[-2] == '"' and token[-1] == "}"):
-                valid_tokens_last.append(id)
-            elif token.count('"') == 0:
-                valid_tokens.append(id)
-                valid_tokens_last.append(id)
-        return (valid_tokens, valid_tokens_last)
+        for token_id, token in vocabulary.items():
+            if '"' not in token:
+                valid_tokens.append(token_id)
+            elif token.count('"') == 1 and token.endswith('"'):
+                valid_tokens.append(token_id)
+        return valid_tokens
